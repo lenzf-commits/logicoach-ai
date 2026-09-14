@@ -1,0 +1,33 @@
+{
+    "name": "logicoach-ai",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start",
+        "lint": "next lint",
+        "typecheck": "tsc --noEmit",
+        "test:personas": "node --experimental-strip-types --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/test-personas.ts"
+    },
+    "dependencies": {
+        "@supabase/ssr": "latest",
+        "@supabase/supabase-js": "latest",
+        "next": "^15.5.0",
+        "pdf-parse": "^1.1.1",
+        "react": "^19.1.0",
+        "react-dom": "^19.1.0"
+    },
+    "devDependencies": {
+        "@types/node": "latest",
+        "@types/react": "latest",
+        "@types/react-dom": "latest",
+        "autoprefixer": "^10.4.21",
+        "dotenv": "^17.4.2",
+        "eslint": "latest",
+        "eslint-config-next": "^15.5.0",
+        "postcss": "^8.5.6",
+        "tailwindcss": "^3.4.17",
+        "typescript": "latest"
+    }
+}
