@@ -43,10 +43,13 @@ function buildPrompt({ interview, messages, resume, jobPosting, evaluation }: Ge
     .join("\n\n");
 
   return [
-    "Du bist ein professioneller deutscher Bewerbungscoach fuer Logistik-Bewerbungsgespraeche.",
+    "Du bist ein professioneller deutscher Bewerbungscoach für Bewerbungsgespräche aller Branchen. Passe dein Feedback an die Zielposition und den Gesprächsinhalt an; setze keine bestimmte Branche voraus.",
     "Erstelle einen ehrlichen, direkten und hilfreichen KI-Coaching-Bericht.",
+    "Sprich die Nutzerin oder den Nutzer direkt mit du an. Schreibe persönlich, konkret und ermutigend.",
     "Der Bericht ist ein Zusatz zu einer regelbasierten Bewertung und ersetzt diese nicht.",
     "Gehe konkret auf Aussagen aus dem Interview ein. Keine allgemeinen Floskeln wie 'Gut gemacht, weiter so'.",
+    "Prüfe jede Aussage am tatsächlichen Gesprächsverlauf und nenne gedanklich die konkrete Antwort, auf die sie sich stützt. Erfinde keine Erfolge, Zahlen oder Anforderungen.",
+    "Ordne Stärken und Schwächen nach ihrer Wirkung auf das Bewerbungsgespräch. Ein niedriger regelbasierter Score ist nur ein Hinweis und darf nicht ungeprüft als Tatsache übernommen werden.",
     "Sei klar und streng, aber nicht beleidigend.",
     "Antworte ausschliesslich als valides JSON ohne Markdown.",
     "",
@@ -61,14 +64,19 @@ function buildPrompt({ interview, messages, resume, jobPosting, evaluation }: Ge
     "}",
     "",
     "Regeln:",
-    "- summary: 4 bis 6 Saetze.",
-    "- strengths: 3 konkrete Staerken.",
-    "- weaknesses: 3 konkrete Schwaechen.",
-    "- recommendations: 4 konkrete naechste Schritte.",
+    "- summary: 4 bis 6 Sätze.",
+    "- strengths: 3 konkrete Stärken.",
+    "- weaknesses: 3 konkrete Schwächen.",
+    "- recommendations: 4 konkrete nächste Schritte.",
     "- topRisks: genau 3 Risiken aus Recruiter-Sicht.",
     "- improvedAnswers: genau 3 bessere Beispielantworten, jeweils kurz, realistisch und auf Deutsch.",
     "- Beziehe Lebenslauf, Stellenanzeige, Persona, Level und regelbasierte Scores ein.",
     "- Wenn Informationen fehlen, benenne das sachlich.",
+    "- UI-REGEL: Der Bericht wird als kompakte Karten angezeigt. Schreibe kurze, scanbare Aussagen statt langer Absätze.",
+    "- UI-REGEL: summary maximal 3 kurze Sätze; strengths maximal 3 Einträge mit höchstens 14 Wörtern; weaknesses maximal 3 Einträge mit höchstens 14 Wörtern.",
+    "- UI-REGEL: recommendations maximal 3 konkrete Schritte, jeweils mit einem Verb beginnen; topRisks maximal 3 kurze Risiken; improvedAnswers maximal 2 kurze Beispielantworten.",
+    "- Jede Stärke und jede Schwäche muss sich auf eine konkrete Antwort oder ein konkretes Muster im Gespräch beziehen.",
+    "- recommendations sollen als nächste Übung formuliert sein und eine kleine erreichbare Aktion für die nächste Runde enthalten.",
     "",
     `Interviewer-Persona: ${persona}`,
     `Schwierigkeitslevel: ${interview.level ?? 1}/10`,
@@ -80,7 +88,7 @@ function buildPrompt({ interview, messages, resume, jobPosting, evaluation }: Ge
       self_presentation_score: evaluation.self_presentation_score,
       communication_score: evaluation.communication_score,
       structure_score: evaluation.structure_score,
-      logistics_keywords_score: evaluation.logistics_keywords_score,
+      professional_context_score: evaluation.logistics_keywords_score,
       confidence_score: evaluation.confidence_score,
       filler_word_count: evaluation.filler_word_count,
       average_answer_length: evaluation.average_answer_length,
@@ -141,7 +149,7 @@ function parseReport(text: string): AiCoachingReport {
   try {
     parsed = JSON.parse(text);
   } catch {
-    throw new Error("OpenAI hat keinen gueltigen Coaching-Bericht erzeugt.");
+    throw new Error("OpenAI hat keinen gültigen Coaching-Bericht erzeugt.");
   }
 
   if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
@@ -152,7 +160,7 @@ function parseReport(text: string): AiCoachingReport {
   const summary = typeof report.summary === "string" ? report.summary.trim() : "";
 
   if (!summary) {
-    throw new Error("OpenAI Coaching-Bericht enthaelt keine Zusammenfassung.");
+    throw new Error("OpenAI Coaching-Bericht enthält keine Zusammenfassung.");
   }
 
   return {
@@ -206,7 +214,7 @@ export async function generateAiCoachingReport(input: GenerateAiCoachingReportIn
     responseData.status === "incomplete" &&
     responseData.incomplete_details?.reason === "max_output_tokens"
   ) {
-    throw new AiCoachingReportError("OpenAI Coaching unvollstaendig: Das Output-Tokenbudget war zu niedrig.");
+    throw new AiCoachingReportError("OpenAI Coaching unvollständig: Das Output-Tokenbudget war zu niedrig.");
   }
 
   const text = extractResponseText(data);

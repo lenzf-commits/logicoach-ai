@@ -124,7 +124,7 @@ export async function deleteInterviewById(id: string) {
   } = await supabase.auth.getUser();
 
   if (authError || !user) {
-    throw new Error("Du musst eingeloggt sein, um ein Interview zu loeschen.");
+    throw new Error("Du musst eingeloggt sein, um ein Interview zu löschen.");
   }
 
   const { error } = await supabase

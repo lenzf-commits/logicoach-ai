@@ -3,23 +3,23 @@ import type { Tables } from "@/types/database";
 const fillerWords = ["ähm", "äh", "also", "quasi", "halt", "irgendwie", "sozusagen", "eigentlich"];
 const exampleTerms = ["beispiel", "situation", "damals", "konkret", "in meiner letzten stelle"];
 const evidenceTerms = ["prozent", "%", "anzahl", "mitarbeiter", "jahre", "täglich", "woechentlich", "wöchentlich"];
-const logisticsTerms = [
-  "lager",
-  "wareneingang",
-  "warenausgang",
-  "kommissionierung",
-  "bestand",
-  "inventur",
-  "sap",
-  "ewm",
-  "erp",
-  "wms",
-  "fifo",
-  "lifo",
-  "schicht",
-  "tourenplanung"
+const professionalTerms = [
+  "aufgabe",
+  "projekt",
+  "ziel",
+  "ergebnis",
+  "kunde",
+  "qualität",
+  "methode",
+  "analyse",
+  "planung",
+  "umsetzung",
+  "verbesserung",
+  "lösung",
+  "erfahrung",
+  "verantwortung"
 ];
-const leadershipTerms = ["team", "mitarbeiter", "verantwortung", "konflikt", "schichtplanung", "einarbeitung", "motivation"];
+const leadershipTerms = ["team", "mitarbeiter", "verantwortung", "konflikt", "zusammenarbeit", "einarbeitung", "motivation"];
 
 function clamp(value: number) {
   return Math.max(0, Math.min(100, Math.round(value)));
@@ -59,19 +59,19 @@ export function evaluateInterviewMessages(messages: Tables<"interview_messages">
   const fillerWordCount = countTermMatches(fullText, fillerWords);
   const exampleCount = countTermMatches(fullText, exampleTerms);
   const evidenceCount = countTermMatches(fullText, evidenceTerms);
-  const logisticsMatches = uniqueMatchedTerms(fullText, logisticsTerms);
+  const professionalMatches = uniqueMatchedTerms(fullText, professionalTerms);
   const leadershipMatches = uniqueMatchedTerms(fullText, leadershipTerms);
 
   const selfPresentationScore = clamp(45 + Math.min(answerCount * 8, 25) + Math.min(exampleCount * 10, 20) + Math.min(evidenceCount * 5, 10) - shortAnswerCount * 8);
   const communicationScore = clamp(75 - fillerWordCount * 4 - longAnswerCount * 10 + Math.min(answerCount * 3, 12));
   const structureScore = clamp(50 + Math.min(exampleCount * 12, 25) + Math.min(evidenceCount * 8, 20) - shortAnswerCount * 10 - longAnswerCount * 8);
-  const logisticsKeywordsScore = clamp(35 + Math.min(logisticsMatches.length * 9, 45) + Math.min(leadershipMatches.length * 5, 20));
+  const professionalContextScore = clamp(35 + Math.min(professionalMatches.length * 9, 45) + Math.min(leadershipMatches.length * 5, 20));
   const confidenceScore = clamp(70 - fillerWordCount * 3 - shortAnswerCount * 8 + Math.min(evidenceCount * 5, 15));
   const overallScore = clamp(
     (selfPresentationScore +
       communicationScore +
       structureScore +
-      logisticsKeywordsScore +
+      professionalContextScore +
       confidenceScore) /
       5
   );
@@ -80,8 +80,8 @@ export function evaluateInterviewMessages(messages: Tables<"interview_messages">
   const weaknesses: string[] = [];
   const recommendations: string[] = [];
 
-  if (logisticsMatches.length > 0) {
-    strengths.push("Du hast konkrete Logistikbegriffe verwendet.");
+  if (professionalMatches.length > 0) {
+    strengths.push("Du hast Aufgaben, Vorgehensweisen oder Ergebnisse aus dem Berufsalltag angesprochen.");
   }
 
   if (exampleCount > 0) {
@@ -93,7 +93,7 @@ export function evaluateInterviewMessages(messages: Tables<"interview_messages">
   }
 
   if (leadershipMatches.length > 0) {
-    strengths.push("Du hast Fuehrungs- oder Teamaspekte angesprochen.");
+    strengths.push("Du hast Führungs- oder Teamaspekte angesprochen.");
   }
 
   if (answerCount === 0) {
@@ -112,22 +112,22 @@ export function evaluateInterviewMessages(messages: Tables<"interview_messages">
   }
 
   if (fillerWordCount >= 4) {
-    weaknesses.push("Du hast viele Fuellwoerter verwendet.");
-    recommendations.push("Reduziere Fuellwoerter wie aehm, also und quasi.");
+    weaknesses.push("Du hast viele Füllwörter verwendet.");
+    recommendations.push("Reduziere Füllwörter wie ähm, also und quasi.");
   }
 
   if (exampleCount === 0 && answerCount > 0) {
     weaknesses.push("Es fehlen konkrete Praxisbeispiele.");
-    recommendations.push("Nutze haeufiger konkrete Beispiele aus deiner Logistikpraxis.");
+    recommendations.push("Nutze häufiger konkrete Beispiele aus deiner beruflichen Praxis, Ausbildung oder deinem Studium.");
   }
 
   if (leadershipMatches.length === 0 && answerCount > 0) {
-    recommendations.push("Beantworte Fuehrungsfragen mit Situation, Handlung und Ergebnis.");
+    recommendations.push("Beschreibe bei Fragen zur Zusammenarbeit deine Situation, deinen Beitrag und das Ergebnis.");
   }
 
-  if (logisticsMatches.length === 0 && answerCount > 0) {
-    weaknesses.push("Der Logistikbezug ist noch schwach.");
-    recommendations.push("Nenne passende Begriffe wie Lager, Wareneingang, Kommissionierung, SAP oder WMS, wenn sie fachlich zutreffen.");
+  if (professionalMatches.length === 0 && answerCount > 0) {
+    weaknesses.push("Deine beruflichen Aufgaben und Vorgehensweisen werden noch wenig konkret.");
+    recommendations.push("Beschreibe eine konkrete Aufgabe, deine Vorgehensweise und das Ergebnis passend zur Zielposition.");
   }
 
   return {
@@ -135,7 +135,7 @@ export function evaluateInterviewMessages(messages: Tables<"interview_messages">
     self_presentation_score: selfPresentationScore,
     communication_score: communicationScore,
     structure_score: structureScore,
-    logistics_keywords_score: logisticsKeywordsScore,
+    logistics_keywords_score: professionalContextScore,
     confidence_score: confidenceScore,
     filler_word_count: fillerWordCount,
     average_answer_length: averageAnswerLength,

@@ -1,13 +1,11 @@
 import { PageShell } from "@/components/layout/page-shell";
-import { PlaceholderCard } from "@/components/ui/placeholder-card";
+import { ButtonLink } from "@/components/ui/button-link";
 
 export default function EvaluationPage() {
   return (
-    <PageShell eyebrow="Feedback" title="Auswertung" description="Spaeter stehen hier Gesamtscore, Kategorien, Staerken, Schwaechen und konkrete Verbesserungen.">
-      <div className="grid gap-4 md:grid-cols-2">
-        <PlaceholderCard title="Score" description="Platzhalter fuer die Bewertung von 0 bis 100." />
-        <PlaceholderCard title="Kategorien" description="Platzhalter fuer Fachwissen, Kommunikation, Selbstpraesentation und weitere Kriterien." />
-      </div>
+    <PageShell eyebrow="Feedback" title="Dein Feedback" description="Nach jedem abgeschlossenen Interview erhältst du eine verständliche Auswertung mit konkreten nächsten Schritten.">
+      <section className="rounded-xl border border-route/20 bg-route/5 p-6 sm:p-8"><div className="flex flex-wrap items-start justify-between gap-5"><div><p className="text-xs font-bold uppercase tracking-[0.2em] text-route">So funktioniert die Auswertung</p><h2 className="mt-3 text-2xl font-bold text-ink">Antworten verstehen. Nächste Runde besser starten.</h2><p className="mt-3 max-w-2xl leading-7 text-steel">Dein Score ist nur der Anfang. Du siehst, was bereits gut funktioniert, wo du klarer werden kannst und welche Übung als Nächstes sinnvoll ist.</p></div><span className="text-5xl" aria-hidden="true">◎</span></div><div className="mt-7 grid gap-4 md:grid-cols-3">{[["01", "Gesamteindruck", "Dein Gespräch als Orientierung auf einen Blick."], ["02", "Stärken & Potenziale", "Konkrete Beobachtungen statt pauschaler Tipps."], ["03", "Nächste Übung", "Ein klarer Fokus für dein nächstes Training."]].map(([number, title, text]) => <div key={number} className="rounded-lg border border-route/15 bg-white p-4"><span className="text-xs font-bold text-route">{number}</span><h3 className="mt-2 font-semibold text-ink">{title}</h3><p className="mt-1 text-sm leading-6 text-steel">{text}</p></div>)}</div></section>
+      <section className="mt-6 rounded-xl border border-ink/10 bg-white p-6 text-center shadow-soft sm:p-8"><span className="text-4xl" aria-hidden="true">📊</span><h2 className="mt-4 text-xl font-semibold text-ink">Noch keine Auswertung geöffnet</h2><p className="mx-auto mt-2 max-w-lg leading-7 text-steel">Starte ein Interview und erstelle danach deine Bewertung. Bereits vorhandene Ergebnisse erreichst du über das Replay Center.</p><div className="mt-6 flex flex-wrap justify-center gap-3"><ButtonLink href="/interview-vorbereitung">Interview vorbereiten</ButtonLink><ButtonLink href="/replay-center" variant="secondary">Replay Center öffnen</ButtonLink></div></section>
     </PageShell>
   );
 }

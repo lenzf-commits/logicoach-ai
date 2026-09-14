@@ -18,7 +18,7 @@ export function buildAchievements(profile: Tables<"users">): Achievement[] {
     {
       code: "FIVE_INTERVIEWS",
       title: "5 Interviews",
-      description: "Schliesse fuenf Trainings ab.",
+      description: "Schliesse fünf Trainings ab.",
       unlocked: profile.total_interviews_completed >= 5
     },
     {

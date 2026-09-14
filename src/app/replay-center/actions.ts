@@ -19,10 +19,10 @@ export async function deleteInterviewAction(formData: FormData) {
   try {
     await deleteInterviewById(interviewId);
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Interview konnte nicht geloescht werden.";
+    const message = error instanceof Error ? error.message : "Interview konnte nicht gelöscht werden.";
     redirect(`/replay-center?error=${encodeURIComponent(message)}`);
   }
 
   revalidatePath("/replay-center");
-  redirect("/replay-center?success=Interview wurde geloescht.");
+  redirect("/replay-center?success=Interview wurde gelöscht.");
 }

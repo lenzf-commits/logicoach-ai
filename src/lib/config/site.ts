@@ -1,11 +1,12 @@
 export const siteConfig = {
   name: "LogiCoach AI",
-  description: "KI-gestuetzter Interviewtrainer fuer Logistik-Bewerbungsgespraeche",
+  description: "KI-gestützter Interviewtrainer für alle Branchen und Berufswege",
   mainNav: [
-    { href: "/dashboard", label: "Dashboard" },
-    { href: "/interview-vorbereitung", label: "Vorbereitung" },
-    { href: "/live-interview", label: "Live Interview" },
-    { href: "/auswertung", label: "Auswertung" },
-    { href: "/replay-center", label: "Replay Center" }
+    { href: "/dashboard", label: "Dashboard", icon: "⌂", description: "Dein Fortschritt" },
+    { href: "/interview-vorbereitung", label: "Vorbereitung", icon: "✦", description: "Interview planen" },
+    { href: "/live-interview", label: "Live Interview", icon: "●", description: "Interview starten" },
+    { href: "/auswertung", label: "Auswertung", icon: "▣", description: "Feedback ansehen" },
+    { href: "/replay-center", label: "Replay Center", icon: "↺", description: "Gespräche wiederholen" },
+    { href: "/praesentationen", label: "Präsentationen üben", icon: "▤", description: "Präsentationen trainieren", highlighted: true }
   ]
 };

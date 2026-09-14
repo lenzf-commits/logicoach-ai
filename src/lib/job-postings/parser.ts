@@ -20,7 +20,7 @@ export type ParsedJobPostingData = {
 
 const responsibilityKeywords = ["aufgaben", "taetigkeiten", "verantwortung", "ihre rolle", "das erwartet"];
 const requirementKeywords = ["anforderungen", "profil", "qualifikation", "bringen sie mit", "voraussetzung"];
-const hardSkillKeywords = ["sap", "sap ewm", "erp", "wms", "excel", "ms office", "lagerverwaltung", "kennzahlen"];
+const hardSkillKeywords = ["software", "excel", "ms office", "programmierung", "datenanalyse", "projektmanagement", "buchhaltung", "beratung", "pflege", "unterricht", "konstruktion", "marketing", "qualitätssicherung", "fremdsprachen", "kennzahlen"];
 const softSkillKeywords = ["teamfaehigkeit", "kommunikation", "zuverlaessigkeit", "belastbarkeit", "organisation"];
 const leadershipKeywords = ["fuehrung", "teamleitung", "schichtleitung", "personalverantwortung", "mitarbeiter fuehren"];
 const shiftKeywords = ["schicht", "fruehschicht", "spaetschicht", "nachtschicht", "wechselschicht"];
@@ -78,7 +78,7 @@ function findLabeledValue(lines: string[], labels: string[]) {
 function inferJobTitle(lines: string[]) {
   return (
     findLabeledValue(lines, ["jobtitel", "position", "stelle"]) ??
-    lines.find((line) => /\b(fachkraft|disponent|teamleiter|schichtleiter|lagerleiter|operator)\b/i.test(line)) ??
+    lines.find((line) => /\b(fachkraft|entwickler|ingenieur|kaufmann|kauffrau|berater|pflegekraft|lehrer|manager|teamleiter|assistenz|techniker|designer)\b/i.test(line)) ??
     null
   );
 }
@@ -86,7 +86,7 @@ function inferJobTitle(lines: string[]) {
 function inferCompany(lines: string[]) {
   return (
     findLabeledValue(lines, ["unternehmen", "firma", "arbeitgeber"]) ??
-    lines.find((line) => /\b(gmbh|ag|kg|ug|se|logistik|spedition|dhl|db schenker|dachser)\b/i.test(line)) ??
+    lines.find((line) => /\b(gmbh|ag|kg|ug|se|universität|hochschule|klinik|schule)\b/i.test(line)) ??
     null
   );
 }
@@ -95,7 +95,7 @@ function buildRisks(parsed: Omit<ParsedJobPostingData, "interviewRisks">) {
   const risks: string[] = [];
 
   if (parsed.leadershipResponsibility.possible) {
-    risks.push("Fuehrungsverantwortung koennte im Interview vertieft abgefragt werden.");
+    risks.push("Führungsverantwortung könnte im Interview vertieft abgefragt werden.");
   }
 
   if (parsed.shiftWork.possible) {
@@ -103,11 +103,11 @@ function buildRisks(parsed: Omit<ParsedJobPostingData, "interviewRisks">) {
   }
 
   if (parsed.systems.length > 0) {
-    risks.push("Systemkenntnisse wie SAP, ERP oder WMS koennten fachlich geprueft werden.");
+    risks.push("Die in der Stellenanzeige genannten Systeme und Werkzeuge könnten fachlich geprüft werden.");
   }
 
   if (parsed.requirements.length === 0) {
-    risks.push("Anforderungen sind im Text nicht klar erkennbar und sollten manuell geprueft werden.");
+    risks.push("Anforderungen sind im Text nicht klar erkennbar und sollten manuell geprüft werden.");
   }
 
   return risks;

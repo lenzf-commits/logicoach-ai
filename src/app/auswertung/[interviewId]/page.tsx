@@ -1,173 +1,43 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageShell } from "@/components/layout/page-shell";
-import { PlaceholderCard } from "@/components/ui/placeholder-card";
 import { generateAiCoachingReportAction } from "@/app/evaluation-actions";
 import { getInterviewEvaluationByInterviewId } from "@/lib/queries/interview-evaluations";
 import { getInterviewById } from "@/lib/queries/interviews";
 
-type EvaluationPageProps = {
-  params: Promise<{
-    interviewId: string;
-  }>;
-  searchParams: Promise<{
-    error?: string;
-  }>;
-};
+type EvaluationPageProps = { params: Promise<{ interviewId: string }>; searchParams: Promise<{ error?: string }> };
+function asStringList(value: unknown) { return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : []; }
 
-function asStringList(value: unknown) {
-  return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
+function ScoreBar({ title, score }: { title: string; score: number }) {
+  return <div><div className="flex items-center justify-between gap-3 text-sm"><span className="font-semibold text-ink">{title}</span><span className="font-bold text-route">{score}</span></div><div className="mt-2 h-2.5 overflow-hidden rounded-full bg-ink/10"><div className="h-full rounded-full bg-route" style={{ width: `${score}%` }} /></div></div>;
 }
 
-function ScoreCard({ title, score }: { title: string; score: number }) {
-  return (
-    <div className="rounded-md border border-ink/10 p-4">
-      <p className="text-sm font-semibold text-ink">{title}</p>
-      <p className="mt-2 text-2xl font-bold text-route">{score}</p>
-    </div>
-  );
-}
-
-function FeedbackList({ title, items }: { title: string; items: string[] }) {
-  return (
-    <section className="rounded-lg border border-ink/10 bg-white p-6 shadow-soft">
-      <h2 className="text-lg font-semibold text-ink">{title}</h2>
-      <ul className="mt-4 space-y-2">
-        {items.map((item) => (
-          <li key={item} className="text-sm leading-6 text-steel">
-            {item}
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
-
-function CompactFeedbackList({ title, items }: { title: string; items: string[] }) {
-  return (
-    <div className="rounded-md border border-ink/10 p-4">
-      <h3 className="text-sm font-semibold text-ink">{title}</h3>
-      {items.length > 0 ? (
-        <ul className="mt-3 space-y-2">
-          {items.map((item) => (
-            <li key={item} className="text-sm leading-6 text-steel">
-              {item}
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className="mt-3 text-sm leading-6 text-steel">Keine Eintraege vorhanden.</p>
-      )}
-    </div>
-  );
+function FeedbackCard({ title, items, tone }: { title: string; items: string[]; tone: "green" | "amber" | "ink" }) {
+  const toneClass = tone === "green" ? "border-route/20 bg-route/5" : tone === "amber" ? "border-signal/30 bg-signal/10" : "border-ink/10 bg-white";
+  return <section className={`rounded-xl border p-5 shadow-sm ${toneClass}`}><h2 className="text-base font-semibold text-ink">{title}</h2>{items.length > 0 ? <ul className="mt-3 space-y-2">{items.slice(0, 3).map((item) => <li key={item} className="flex gap-2 text-sm leading-6 text-steel"><span className="mt-1 text-route" aria-hidden="true">•</span><span>{item}</span></li>)}</ul> : <p className="mt-3 text-sm text-steel">Noch keine Einträge vorhanden.</p>}</section>;
 }
 
 export default async function EvaluationDetailPage({ params, searchParams }: EvaluationPageProps) {
   const { interviewId } = await params;
   const query = await searchParams;
-  const [interview, evaluation] = await Promise.all([
-    getInterviewById(interviewId),
-    getInterviewEvaluationByInterviewId(interviewId)
-  ]);
-
-  if (!interview || !evaluation) {
-    notFound();
-  }
+  const [interview, evaluation] = await Promise.all([getInterviewById(interviewId), getInterviewEvaluationByInterviewId(interviewId)]);
+  if (!interview || !evaluation) notFound();
+  const score = evaluation.overall_score;
+  const aiStrengths = asStringList(evaluation.ai_strengths);
+  const aiWeaknesses = asStringList(evaluation.ai_weaknesses);
+  const aiRecommendations = asStringList(evaluation.ai_recommendations);
+  const aiRisks = asStringList(evaluation.ai_top_risks);
+  const aiImproved = asStringList(evaluation.ai_improved_answers);
 
   return (
-    <PageShell
-      eyebrow="Auswertung"
-      title="Regelbasierte Bewertung"
-      description="Diese erste Bewertung nutzt einfache Regeln und keine OpenAI API."
-    >
-      <div className="mb-6 flex flex-wrap gap-2">
-        <Link
-          href="/replay-center"
-          className="inline-flex min-h-11 items-center justify-center rounded-md bg-route px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-route/90"
-        >
-          Zurueck zur Replay-Liste
-        </Link>
-        <Link
-          href={`/replay-center/${interview.id}`}
-          className="inline-flex min-h-11 items-center justify-center rounded-md border border-ink/15 bg-white px-5 py-2.5 text-sm font-semibold text-ink transition hover:bg-ink/5"
-        >
-          Gespraech ansehen
-        </Link>
-      </div>
-
-      {query.error ? (
-        <p className="mb-6 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          {query.error}
-        </p>
-      ) : null}
-
-      <div className="grid gap-4 md:grid-cols-3">
-        <PlaceholderCard title="Gesamtbewertung" description={`${evaluation.overall_score} von 100 Punkten`} />
-        <PlaceholderCard title="Fuellwoerter" description={`${evaluation.filler_word_count} erkannt`} />
-        <PlaceholderCard title="Antwortlaenge" description={`${evaluation.average_answer_length} Woerter im Durchschnitt`} />
-      </div>
-
-      <section className="mt-6 rounded-lg border border-ink/10 bg-white p-6 shadow-soft">
-        <h2 className="text-lg font-semibold text-ink">Einzelkategorien</h2>
-        <div className="mt-4 grid gap-4 md:grid-cols-5">
-          <ScoreCard title="Selbstpraesentation" score={evaluation.self_presentation_score} />
-          <ScoreCard title="Kommunikation" score={evaluation.communication_score} />
-          <ScoreCard title="Struktur" score={evaluation.structure_score} />
-          <ScoreCard title="Logistikbezug" score={evaluation.logistics_keywords_score} />
-          <ScoreCard title="Selbstbewusstsein" score={evaluation.confidence_score} />
-        </div>
-      </section>
-
-      <div className="mt-6 grid gap-6 lg:grid-cols-3">
-        <FeedbackList title="Staerken" items={asStringList(evaluation.strengths)} />
-        <FeedbackList title="Schwaechen" items={asStringList(evaluation.weaknesses)} />
-        <FeedbackList title="Empfehlungen" items={asStringList(evaluation.recommendations)} />
-      </div>
-
-      <section className="mt-6 rounded-lg border border-ink/10 bg-white p-6 shadow-soft">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <h2 className="text-lg font-semibold text-ink">KI-Coaching-Bericht</h2>
-            <p className="mt-2 text-sm leading-6 text-steel">
-              Zusatzbericht mit konkretem Feedback auf Basis des gespeicherten Interviewverlaufs.
-            </p>
-          </div>
-          {!evaluation.ai_created_at ? (
-            <form action={generateAiCoachingReportAction}>
-              <input type="hidden" name="interviewId" value={interview.id} />
-              <button
-                type="submit"
-                className="inline-flex min-h-11 items-center justify-center rounded-md bg-route px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-route/90"
-              >
-                KI-Coaching erstellen
-              </button>
-            </form>
-          ) : null}
-        </div>
-
-        {evaluation.ai_created_at ? (
-          <div className="mt-6 space-y-6">
-            {evaluation.ai_summary ? (
-              <div>
-                <h3 className="text-sm font-semibold text-ink">Zusammenfassung</h3>
-                <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-steel">{evaluation.ai_summary}</p>
-              </div>
-            ) : null}
-
-            <div className="grid gap-6 lg:grid-cols-2">
-              <CompactFeedbackList title="KI-Staerken" items={asStringList(evaluation.ai_strengths)} />
-              <CompactFeedbackList title="KI-Schwaechen" items={asStringList(evaluation.ai_weaknesses)} />
-              <CompactFeedbackList title="Top-Risiken" items={asStringList(evaluation.ai_top_risks)} />
-              <CompactFeedbackList title="Konkrete Empfehlungen" items={asStringList(evaluation.ai_recommendations)} />
-            </div>
-
-            <CompactFeedbackList title="Bessere Beispielantworten" items={asStringList(evaluation.ai_improved_answers)} />
-          </div>
-        ) : (
-          <p className="mt-5 text-sm leading-6 text-steel">
-            Noch kein KI-Coaching vorhanden. Der Bericht wird erst erstellt, wenn du den Button anklickst.
-          </p>
-        )}
+    <PageShell eyebrow="Auswertung" title="Dein Interviewbericht" description="Du bekommst hier die wichtigsten Erkenntnisse auf einen Blick – mit einem klaren Fokus für deine nächste Runde.">
+      <div className="mb-6 flex flex-wrap gap-2"><Link href="/replay-center" className="inline-flex min-h-10 items-center justify-center rounded-lg bg-route px-4 py-2 text-sm font-semibold text-white transition hover:bg-route/90">← Replay Center</Link><Link href={`/replay-center/${interview.id}`} className="inline-flex min-h-10 items-center justify-center rounded-lg border border-ink/15 bg-white px-4 py-2 text-sm font-semibold text-ink transition hover:bg-ink/5">Gespräch ansehen</Link></div>
+      {query.error ? <p className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{query.error}</p> : null}
+      <section className="overflow-hidden rounded-xl bg-asphalt p-6 text-white shadow-soft sm:p-8"><div className="flex flex-wrap items-center gap-8"><div className="relative flex h-32 w-32 shrink-0 items-center justify-center rounded-full" style={{ background: `conic-gradient(#1d8f72 ${score * 3.6}deg, rgba(255,255,255,0.12) 0deg)` }}><div className="flex h-24 w-24 items-center justify-center rounded-full bg-asphalt"><span className="text-4xl font-bold text-signal">{score}</span></div></div><div><p className="text-xs font-bold uppercase tracking-[0.2em] text-signal">Dein Ergebnis</p><h2 className="mt-2 text-2xl font-bold">Du hast eine gute Basis.</h2><p className="mt-2 max-w-xl leading-7 text-white/70">Dein Score ist eine Orientierung. Entscheidend ist, welche eine Sache du in der nächsten Runde ausprobierst.</p><div className="mt-4 flex flex-wrap gap-2 text-xs font-semibold"><span className="rounded-full bg-white/10 px-3 py-1.5">Level {interview.level ?? 1}</span><span className="rounded-full bg-signal/20 px-3 py-1.5 text-signal">🎯 Nächste Mission: eine Antwort konkreter machen</span></div></div></div></section>
+      <section className="mt-6 rounded-xl border border-ink/10 bg-white p-6 shadow-soft sm:p-7"><div className="flex flex-wrap items-end justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-[0.2em] text-route">Deine fünf Bereiche</p><h2 className="mt-2 text-xl font-semibold text-ink">Was schon sitzt – und wo du ansetzen kannst</h2></div><span className="text-sm text-steel">0–100 Punkte</span></div><div className="mt-6 grid gap-5 md:grid-cols-2"><ScoreBar title="Selbstpräsentation" score={evaluation.self_presentation_score} /><ScoreBar title="Kommunikation" score={evaluation.communication_score} /><ScoreBar title="Struktur" score={evaluation.structure_score} /><ScoreBar title="Beruflicher Kontext" score={evaluation.logistics_keywords_score} /><ScoreBar title="Selbstbewusstsein" score={evaluation.confidence_score} /></div><div className="mt-6 grid gap-3 sm:grid-cols-2"><div className="rounded-lg bg-ink/5 p-4"><p className="text-xs font-semibold uppercase tracking-wide text-steel">Antwortlänge</p><p className="mt-1 text-xl font-bold text-ink">{evaluation.average_answer_length} Wörter <span className="text-sm font-normal text-steel">im Durchschnitt</span></p></div><div className="rounded-lg bg-ink/5 p-4"><p className="text-xs font-semibold uppercase tracking-wide text-steel">Füllwörter</p><p className="mt-1 text-xl font-bold text-ink">{evaluation.filler_word_count} <span className="text-sm font-normal text-steel">erkannt</span></p></div></div></section>
+      <div className="mt-6 grid gap-5 lg:grid-cols-3"><FeedbackCard title="Das machst du gut" items={asStringList(evaluation.strengths)} tone="green" /><FeedbackCard title="Dein größter Hebel" items={asStringList(evaluation.weaknesses)} tone="amber" /><FeedbackCard title="Dein nächster Schritt" items={asStringList(evaluation.recommendations)} tone="ink" /></div>
+      <section className="mt-6 overflow-hidden rounded-xl border border-route/20 bg-route/5 p-6 shadow-soft sm:p-7"><div className="flex flex-wrap items-start justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-[0.2em] text-route">Persönliches KI-Coaching</p><h2 className="mt-2 text-xl font-semibold text-ink">Dein Coach fasst es für dich zusammen</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-steel">Kurze, konkrete Hinweise direkt aus deinem Gespräch – damit du weißt, woran du als Nächstes arbeiten kannst.</p></div>{!evaluation.ai_created_at ? <form action={generateAiCoachingReportAction}><input type="hidden" name="interviewId" value={interview.id} /><button type="submit" className="inline-flex min-h-11 items-center justify-center rounded-lg bg-route px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-route/90">Coaching erstellen <span className="ml-2" aria-hidden="true">→</span></button></form> : <span className="rounded-full bg-white px-3 py-1.5 text-xs font-bold text-route">Aktualisiert</span>}</div>
+        {evaluation.ai_created_at ? <div className="mt-6 space-y-5">{evaluation.ai_summary ? <div className="rounded-xl bg-white p-5"><p className="text-xs font-bold uppercase tracking-wide text-route">Dein persönlicher Rückblick</p><p className="mt-2 text-base leading-7 text-ink">{evaluation.ai_summary}</p></div> : null}<div className="grid gap-4 md:grid-cols-2"><FeedbackCard title="Deine Stärken" items={aiStrengths} tone="green" /><FeedbackCard title="Woran du arbeiten kannst" items={aiWeaknesses} tone="amber" /><FeedbackCard title="Deine nächsten Übungen" items={aiRecommendations} tone="ink" /><FeedbackCard title="Mögliche Stolpersteine" items={aiRisks} tone="ink" /></div>{aiImproved.length > 0 ? <section className="rounded-xl border border-signal/30 bg-signal/10 p-5"><h2 className="text-base font-semibold text-ink">Eine Antwort zum Nachsprechen</h2><p className="mt-1 text-sm text-steel">Nutze sie als Anregung und formuliere sie mit deinen eigenen Worten.</p><div className="mt-3 space-y-3">{aiImproved.slice(0, 2).map((item) => <p key={item} className="rounded-lg bg-white p-4 text-sm leading-6 text-ink">„{item}“</p>)}</div></section> : null}</div> : <div className="mt-5 rounded-lg border border-route/15 bg-white p-4 text-sm leading-6 text-steel">Der Bericht wird nur erstellt, wenn du ihn startest. Er nutzt deinen Gesprächsverlauf und spricht dich persönlich an.</div>}
       </section>
     </PageShell>
   );

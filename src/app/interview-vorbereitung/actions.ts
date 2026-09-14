@@ -27,7 +27,7 @@ export async function uploadResumeAction(formData: FormData) {
   const file = formData.get("resume");
 
   if (!(file instanceof File) || file.size === 0) {
-    redirectWithStatus("error", "Bitte waehle eine PDF-Datei aus.");
+    redirectWithStatus("error", "Bitte wähle eine PDF-Datei aus.");
   }
 
   if (file.type !== "application/pdf" || !file.name.toLowerCase().endsWith(".pdf")) {
@@ -35,7 +35,7 @@ export async function uploadResumeAction(formData: FormData) {
   }
 
   if (file.size > maxResumeSizeBytes) {
-    redirectWithStatus("error", "Die PDF-Datei darf maximal 5 MB gross sein.");
+    redirectWithStatus("error", "Die PDF-Datei darf maximal 5 MB groß sein.");
   }
 
   const supabase = await createSupabaseServerClient();
@@ -70,7 +70,7 @@ export async function uploadResumeAction(formData: FormData) {
     const parsedPdf = await pdfParse(buffer);
     extractedText = parsedPdf.text.trim();
   } catch {
-    const message = "PDF-Text konnte nicht extrahiert werden. Bitte pruefe, ob die PDF Text enthaelt.";
+    const message = "PDF-Text konnte nicht extrahiert werden. Bitte prüfe, ob die PDF Text enthält.";
     await createResume({
       file_name: safeFileName,
       file_path: filePath,
@@ -84,7 +84,7 @@ export async function uploadResumeAction(formData: FormData) {
   }
 
   if (!extractedText) {
-    const message = "PDF-Text konnte nicht extrahiert werden. Die Datei enthaelt vermutlich nur gescannte Bilder.";
+    const message = "PDF-Text konnte nicht extrahiert werden. Die Datei enthält vermutlich nur gescannte Bilder.";
     await createResume({
       file_name: safeFileName,
       file_path: filePath,

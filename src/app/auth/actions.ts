@@ -43,7 +43,7 @@ export async function signUpAction(formData: FormData) {
   redirectWithMessage(
     "/login",
     "message",
-    "Registrierung erfolgreich. Bitte pruefe bei aktivierter E-Mail-Bestaetigung dein Postfach."
+    "Registrierung erfolgreich. Bitte prüfe bei aktivierter E-Mail-Bestätigung dein Postfach."
   );
 }
 

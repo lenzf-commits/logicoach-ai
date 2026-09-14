@@ -20,11 +20,11 @@ export async function saveJobPostingAction(formData: FormData) {
   const description = getFormString(formData, "description");
 
   if (!description) {
-    redirectWithStatus("jobError", "Bitte fuege die komplette Stellenanzeige ein.");
+    redirectWithStatus("jobError", "Bitte füge die komplette Stellenanzeige ein.");
   }
 
   if (description.length < 80) {
-    redirectWithStatus("jobError", "Die Stellenanzeige ist zu kurz fuer eine sinnvolle Analyse.");
+    redirectWithStatus("jobError", "Die Stellenanzeige ist zu kurz für eine sinnvolle Analyse.");
   }
 
   const parsedData = parseJobPostingText(description, title || null, companyName || null);

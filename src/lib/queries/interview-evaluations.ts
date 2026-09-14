@@ -145,7 +145,7 @@ export async function updateInterviewEvaluationForOwnedInterview(
   }
 
   if (!evaluation) {
-    throw new Error("KI-Coaching konnte nicht gespeichert werden: Keine Bewertung fuer dieses Interview gefunden.");
+    throw new Error("KI-Coaching konnte nicht gespeichert werden: Keine Bewertung für dieses Interview gefunden.");
   }
 
   console.log("AI coaching update ownership", {

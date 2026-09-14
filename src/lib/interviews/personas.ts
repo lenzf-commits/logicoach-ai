@@ -9,16 +9,16 @@ export const interviewerPersonas = [
   },
   {
     value: "michael-weber",
-    label: "Michael Weber - Logistikleiter, fachlich"
+    label: "Michael Weber - Fachvorgesetzter, fachlich"
   },
   {
     value: "sabine-hoffmann",
-    label: "Sabine Hoffmann - Operations Director, kritisch"
+    label: "Sabine Hoffmann - Führungskraft, kritisch"
   }
 ] as const;
 
 export type InterviewerPersonaValue = (typeof interviewerPersonas)[number]["value"];
 
 export function getInterviewerPersonaLabel(value: string | null) {
-  return interviewerPersonas.find((persona) => persona.value === value)?.label ?? value ?? "Nicht ausgewaehlt";
+  return interviewerPersonas.find((persona) => persona.value === value)?.label ?? value ?? "Nicht ausgewählt";
 }

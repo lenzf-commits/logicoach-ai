@@ -14,10 +14,10 @@ export type ParsedResumeData = {
 
 const educationKeywords = ["ausbildung", "studium", "schule", "abschluss", "berufsschule"];
 const experienceKeywords = ["berufserfahrung", "taetigkeit", "praxis", "verantwortlich", "erfahrung"];
-const skillKeywords = ["kenntnisse", "skills", "faehigkeiten", "kompetenzen", "sap", "wms", "excel"];
+const skillKeywords = ["kenntnisse", "skills", "faehigkeiten", "fähigkeiten", "kompetenzen", "software", "sprachen", "methoden", "programmierung", "projektmanagement", "beratung", "pflege", "unterricht", "excel"];
 const certificateKeywords = ["zertifikat", "zertifizierung", "schein", "lizenz", "staplerschein"];
 const leadershipKeywords = ["teamleiter", "schichtleiter", "fuehrung", "personalverantwortung", "leitung"];
-const positionKeywords = ["fachkraft", "disponent", "teamleiter", "schichtleiter", "lagerleiter", "operator"];
+const positionKeywords = ["position", "berufsbezeichnung", "fachkraft", "entwickler", "ingenieur", "kaufmann", "kauffrau", "berater", "pflegekraft", "lehrer", "manager", "teamleiter", "assistenz", "techniker", "designer"];
 
 function normalizeLines(text: string) {
   return text
@@ -55,7 +55,7 @@ function collectLines(lines: string[], keywords: string[]) {
 function collectEmployers(lines: string[]) {
   return unique(
     lines.filter((line) =>
-      /\b(gmbh|ag|kg|ug|se|logistik|spedition|dhl|db schenker|dachser|kuehne|nagel)\b/i.test(line)
+      /\b(gmbh|ag|kg|ug|se|arbeitgeber|unternehmen|universität|hochschule|klinik|schule)\b/i.test(line)
     )
   );
 }

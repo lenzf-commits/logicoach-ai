@@ -14,7 +14,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = await searchParams;
 
   return (
-    <PageShell eyebrow="Auth" title="Login" description="Melde dich mit E-Mail und Passwort an. Die Session wird ueber Supabase Auth verwaltet.">
+    <PageShell eyebrow="Auth" title="Login" description="Melde dich mit E-Mail und Passwort an. Die Session wird über Supabase Auth verwaltet.">
       <form action={signInAction} className="max-w-md rounded-lg border border-ink/10 bg-white p-6 shadow-soft">
         <input type="hidden" name="next" value={params.next ?? "/dashboard"} />
         <div className="space-y-4">

@@ -92,13 +92,13 @@ export default async function InterviewDetailPage({ params, searchParams }: Inte
     <PageShell
       eyebrow="Interview"
       title="Textbasiertes Interview"
-      description="Phase 6: Text-Chat mit KI-Interviewer. Audio, Speech-to-Text und Bewertung folgen spaeter."
+      description="Phase 6: Text-Chat mit KI-Interviewer. Audio, Speech-to-Text und Bewertung folgen später."
     >
       <div className="grid gap-4 md:grid-cols-3">
-        <PlaceholderCard title="Lebenslauf" description={resume?.file_name ?? "Kein Lebenslauf ausgewaehlt."} />
+        <PlaceholderCard title="Lebenslauf" description={resume?.file_name ?? "Kein Lebenslauf ausgewählt."} />
         <PlaceholderCard
           title="Stellenanzeige"
-          description={jobPosting ? `${jobPosting.title}${jobPosting.company_name ? ` bei ${jobPosting.company_name}` : ""}` : "Keine Stellenanzeige ausgewaehlt."}
+          description={jobPosting ? `${jobPosting.title}${jobPosting.company_name ? ` bei ${jobPosting.company_name}` : ""}` : "Keine Stellenanzeige ausgewählt."}
         />
         <PlaceholderCard
           title="Setup"
@@ -147,7 +147,7 @@ export default async function InterviewDetailPage({ params, searchParams }: Inte
                 href="/replay-center"
                 className="inline-flex min-h-11 items-center justify-center rounded-md border border-ink/15 bg-white px-5 py-2.5 text-sm font-semibold text-ink transition hover:bg-ink/5"
               >
-                Replay Center oeffnen
+                Replay Center öffnen
               </Link>
             </div>
           </div>

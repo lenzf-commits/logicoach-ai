@@ -27,23 +27,23 @@ export async function createInterviewAction(formData: FormData) {
   const persona = getFormString(formData, "persona");
 
   if (!resumeId) {
-    redirectWithError("Bitte waehle einen Lebenslauf aus.");
+    redirectWithError("Bitte wähle einen Lebenslauf aus.");
   }
 
   if (!jobPostingId) {
-    redirectWithError("Bitte waehle eine Stellenanzeige aus.");
+    redirectWithError("Bitte wähle eine Stellenanzeige aus.");
   }
 
   if (!allowedDurations.includes(durationMinutes)) {
-    redirectWithError("Bitte waehle eine Interviewdauer von 10, 15 oder 20 Minuten.");
+    redirectWithError("Bitte wähle eine Interviewdauer von 10, 15 oder 20 Minuten.");
   }
 
   if (!Number.isInteger(level) || level < 1 || level > 10) {
-    redirectWithError("Bitte waehle ein Schwierigkeitslevel zwischen 1 und 10.");
+    redirectWithError("Bitte wähle ein Schwierigkeitslevel zwischen 1 und 10.");
   }
 
   if (!allowedPersonaValues.includes(persona as never)) {
-    redirectWithError("Bitte waehle eine gueltige Interviewer-Persona.");
+    redirectWithError("Bitte wähle eine gültige Interviewer-Persona.");
   }
 
   const [resume, jobPosting] = await Promise.all([
@@ -52,11 +52,11 @@ export async function createInterviewAction(formData: FormData) {
   ]);
 
   if (!resume) {
-    redirectWithError("Der ausgewaehlte Lebenslauf wurde nicht gefunden.");
+    redirectWithError("Der ausgewählte Lebenslauf wurde nicht gefunden.");
   }
 
   if (!jobPosting) {
-    redirectWithError("Die ausgewaehlte Stellenanzeige wurde nicht gefunden.");
+    redirectWithError("Die ausgewählte Stellenanzeige wurde nicht gefunden.");
   }
 
   const interview = await createInterview({

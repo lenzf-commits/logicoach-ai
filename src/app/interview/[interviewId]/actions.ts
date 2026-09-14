@@ -53,18 +53,22 @@ function shouldAskClosingQuestion(
 
 function buildClosingQuestion() {
   return [
-    "Vielen Dank fuer Ihre Antworten. Ich habe aktuell keine weiteren Fragen.",
-    "Wir haben ueber Ihren Werdegang, Ihre Motivation und Ihre Erfahrungen gesprochen.",
+    "Vielen Dank für Ihre Antworten. Ich habe aktuell keine weiteren Fragen.",
+    "Wir haben über Ihren Werdegang, Ihre Motivation und Ihre Erfahrungen gesprochen.",
     "Zum Abschluss interessiert mich noch: Haben Sie noch Fragen an uns?"
   ].join("\n\n");
 }
 
 function buildFinalGoodbye() {
   return [
-    "Vielen Dank fuer Ihre Rueckfrage. Die Details zum weiteren Ablauf und zu den Rahmenbedingungen klaeren wir im naechsten Schritt gern transparent.",
-    "Vielen Dank fuer das Gespraech. Wir melden uns zeitnah bei Ihnen.",
-    "Ich wuensche Ihnen einen erfolgreichen Tag."
+    "Vielen Dank für Ihre Rückfrage. Die Details zum weiteren Ablauf und zu den Rahmenbedingungen klären wir im nächsten Schritt gern transparent.",
+    "Vielen Dank für das Gespräch. Wir melden uns zeitnah bei Ihnen.",
+    "Ich wünsche Ihnen einen erfolgreichen Tag."
   ].join("\n\n");
+}
+
+function buildCleanFinalGoodbye() {
+  return "Vielen Dank für das Gespräch. Wir melden uns zeitnah bei Ihnen. Ich wünsche Ihnen einen erfolgreichen Tag.";
 }
 
 export async function sendCandidateAnswerAction(formData: FormData) {
@@ -116,11 +120,25 @@ export async function sendCandidateAnswerAction(formData: FormData) {
     ];
 
     if (hasClosingQuestion(existingMessages) && !hasFinalFarewell(existingMessages)) {
-      await createInterviewMessage({
-        interview_id: interview.id,
-        role: "interviewer",
-        content: buildFinalGoodbye()
-      });
+      let finalReply = buildCleanFinalGoodbye();
+
+      try {
+        finalReply = await generateInterviewQuestion({
+          interview,
+          resume,
+          jobPosting,
+          messages: messagesWithAnswer,
+          mode: "closing_reply"
+        });
+      } catch (error) {
+        console.error("closing candidate question reply failed; using fallback", error);
+      }
+
+      if (!/vielen dank|wir melden uns|wünsche ich ihnen|wuensche ich ihnen/i.test(finalReply)) {
+        finalReply = `${finalReply}\n\n${buildCleanFinalGoodbye()}`;
+      }
+
+      await createInterviewMessage({ interview_id: interview.id, role: "interviewer", content: finalReply });
 
       try {
         await addXpToUser(interview.id);
@@ -159,7 +177,7 @@ export async function sendCandidateAnswerAction(formData: FormData) {
       content: question
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Die naechste Frage konnte nicht erzeugt werden.";
+    const message = error instanceof Error ? error.message : "Die nächste Frage konnte nicht erzeugt werden.";
     redirect(`/interview/${interview.id}?error=${encodeURIComponent(message)}`);
   }
 

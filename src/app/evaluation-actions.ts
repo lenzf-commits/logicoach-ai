@@ -41,7 +41,7 @@ async function ensureRuleBasedEvaluation(interviewId: string) {
   const candidateMessages = messages.filter((message) => message.role === "candidate");
 
   if (candidateMessages.length === 0) {
-    throw new Error("Fuer eine Bewertung brauchst du mindestens eine Kandidatenantwort.");
+    throw new Error("Für eine Bewertung brauchst du mindestens eine Kandidatenantwort.");
   }
 
   const evaluation = evaluateInterviewMessages(messages);
