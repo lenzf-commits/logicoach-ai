@@ -118,7 +118,20 @@ function questionCount(text: string) {
 }
 
 function hasCandidateQuestion(text: string) {
-  return text.includes("?") || containsAny(text, ["wie gross", "wie groß", "einarbeitung", "aufgaben erwarten", "fuehrungskultur", "führungskultur", "schichtplanung"]);
+  if (text.includes("?")) {
+    return true;
+  }
+
+  const normalized = normalize(text);
+  return [
+    "wie gross",
+    "wie sieht die einarbeitung",
+    "welche aufgaben erwarten",
+    "wie ist die fuehrungskultur",
+    "gibt es",
+    "kann ich",
+    "koennen sie mir sagen"
+  ].some((phrase) => normalized.includes(phrase));
 }
 
 export function runPersonaQualityChecks(persona: PersonaAlias, level: number, messages: PersonaTestMessage[]): PersonaQualityResult {

@@ -118,10 +118,6 @@ function buildClosingQuestion() {
   return "Vielen Dank fuer Ihre Antworten. Ich habe aktuell keine weiteren Fragen. Haben Sie noch Fragen an uns?";
 }
 
-function buildFinalFarewell() {
-  return "Danke fuer Ihre Rueckfrage. Wir klaeren die naechsten Schritte transparent im Anschluss. Vielen Dank fuer das Gespraech, wir melden uns zeitnah bei Ihnen. Ich wuensche Ihnen einen erfolgreichen Tag.";
-}
-
 async function simulateInterview(config: PersonaConfig, runIndex: number, candidate: SyntheticCandidate) {
   const interview = makeInterview(config, runIndex);
   const messages: PersonaTestMessage[] = [];
@@ -141,7 +137,15 @@ async function simulateInterview(config: PersonaConfig, runIndex: number, candid
   const closingQuestion = buildClosingQuestion();
   messages.push(makeMessage("interviewer", closingQuestion, messages.length + 1));
   messages.push(makeMessage("candidate", candidate.answerQuestion(closingQuestion, maxRecruiterMessages - 1), messages.length + 1));
-  messages.push(makeMessage("interviewer", buildFinalFarewell(), messages.length + 1));
+
+  const closingReply = await generateInterviewQuestion({
+    interview,
+    resume: testResume,
+    jobPosting: testJobPosting,
+    messages: messages.map((message) => asEngineMessage(message, interview)),
+    mode: "closing_reply"
+  });
+  messages.push(makeMessage("interviewer", closingReply, messages.length + 1));
 
   const quality = runPersonaQualityChecks(config.alias, config.level, messages);
   const aiJudge = await judgePersonaInterview(config.alias, config.level, messages);
@@ -183,7 +187,9 @@ function getMaxRuns(requestedRuns?: number) {
 
 function estimateApiCalls(configCount: number, runs: number) {
   const judgeCalls = process.env.PERSONA_TEST_AI_JUDGE === "true" ? configCount * runs : 0;
-  return configCount * runs * (maxRecruiterMessages - 2) + judgeCalls;
+  const interviewCalls = maxRecruiterMessages - 2;
+  const closingCalls = 1;
+  return configCount * runs * (interviewCalls + closingCalls) + judgeCalls;
 }
 
 function average(values: number[]) {

@@ -92,3 +92,19 @@ Die siebte Migration:
 - erstellt `public.interview_evaluations`
 - speichert Scores, Fuellwortanzahl, Antwortlaenge und Feedbacklisten
 - legt RLS Policies an, sodass Nutzer nur Bewertungen ihrer eigenen Interviews lesen und schreiben koennen
+
+## Inhaltliche Replay-Analyse
+
+Nach den bestehenden Migrationen `supabase/migrations/0009_replay_analyses.sql`
+im Supabase SQL Editor ausführen. Die Migration legt eine neue Tabelle mit
+Eigentümerprüfung (RLS) an und verändert keine vorhandenen Interviewinhalte.
+
+Im Replay Center ein Gespräch öffnen und „Antworten analysieren“ wählen.
+Die Analyse wird einmal pro unverändertem Gespräch und Kontext gespeichert.
+Markierungen enthalten Begründung, Formulierungsvorschlag und gegebenenfalls
+ein geprüftes Lebenslaufzitat. Änderungen am Gespräch oder Kontext erfordern
+eine Aktualisierung. Beim Löschen des Interviews wird die Analyse mit gelöscht.
+
+Ohne diese Migration zeigt die App einen Einrichtungszustand; der Verlauf
+bleibt lesbar. Das Präsentationsformular benötigt keine zusätzliche Tabelle:
+Der erzeugte Plan bleibt nur in der geöffneten Seite.

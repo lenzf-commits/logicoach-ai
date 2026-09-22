@@ -261,6 +261,12 @@ export type Database = {
         };
         Relationships: [];
       };
+      replay_analyses: {
+        Row: { interview_id: string; user_id: string; input_hash: string; report: Json; created_at: string };
+        Insert: { interview_id: string; user_id: string; input_hash: string; report: Json; created_at?: string };
+        Update: { input_hash?: string; report?: Json; created_at?: string };
+        Relationships: [];
+      };
       progress_history: {
         Row: {
           id: string;
