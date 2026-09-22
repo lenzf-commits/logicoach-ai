@@ -20,3 +20,19 @@ test-results/*
 /PRD.md
 /README.md
 /PROJEKTSTAND.md
+
+# Private notes and source material
+/Kurzes Brainstorming/
+/quellen/
+/sources/
+/private-sources/
+
+# Local Supabase CLI state (migrations and README stay tracked)
+.supabase/
+supabase/.branches/
+supabase/.temp/
+
+# Personal helper scripts; project scripts remain versioned
+/scripts/local/
+scripts/*.local.*
+scripts/**/*.local.*
